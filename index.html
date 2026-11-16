@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="ru"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light"><meta name="theme-color" content="#143a4d">
+<meta name="description" content="История нейросетей от 1940-х и перцептрона до attention, FFN, Transformer и современных LLM — доступная научно-популярная глава с эпохами и схемами.">
+<meta property="og:type" content="article"><meta property="og:title" content="Как мы дошли до LLM"><meta property="og:description" content="История идей: от первых искусственных нейронов и фантастики 1950-х до attention и современных языковых моделей.">
+<title>Как мы дошли до LLM — от первого нейрона до Transformer</title>
+<style>
+:root { color-scheme: light; --ink:#203044; --muted:#66758b; --paper:#fbfaf6; --white:#fff; --brand:#21526b; --accent:#e4a56f; --line:#e5e6e3; --focus:#f1f6f7; }
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:18px/1.78 Georgia,'Times New Roman',serif;-webkit-font-smoothing:antialiased}
+a{color:#206481;text-decoration-color:#9ec2cf;text-underline-offset:3px}a:hover{color:#0e8093}
+.hero{position:relative;overflow:hidden;color:#f4f8fb;background:radial-gradient(circle at 80% 12%,#275e76 0,transparent 36%),linear-gradient(135deg,#132c42 0%,#143f55 52%,#0f2e40 100%)}
+.hero::before{content:'';position:absolute;inset:0;opacity:.15;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:22px 22px;mask-image:linear-gradient(90deg,transparent 15%,black 100%)}
+.hero-inner{position:relative;max-width:1080px;margin:auto;padding:82px 32px 84px}.eyebrow{font:700 12px/1.3 system-ui,sans-serif;letter-spacing:.21em;text-transform:uppercase;color:#a9d7e7}
+.hero h1{max-width:820px;margin:22px 0 20px;letter-spacing:-.04em;font-size:clamp(48px,8vw,89px);line-height:1.06;font-weight:700}.hero h1 em{font-style:normal;color:#f3c28f}
+.hero .sub{max-width:750px;font-size:clamp(19px,2.3vw,25px);line-height:1.47;color:#d8e7ed}.hero-bottom{margin-top:34px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;font:600 13px/1.5 system-ui,sans-serif;color:#c5dce6}
+.hero-bottom .chip{border:1px solid #52788a;border-radius:999px;padding:7px 14px;background:#ffffff11}
+.topbar{position:sticky;z-index:10;top:0;background:rgba(251,250,246,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);font:600 13px/1.4 system-ui,sans-serif;color:var(--muted)}
+.topbar-inner{max-width:1270px;padding:12px 28px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:16px}.topbar a{text-decoration:none;color:var(--brand)}
+.progress-track{height:3px;background:transparent}.progress-bar{height:100%;width:0;background:#d28c54;transition:width .1s linear}
+.layout{max-width:1270px;margin:0 auto;padding:48px 28px 90px;display:grid;grid-template-columns:270px minmax(0,800px);align-items:start;gap:60px}
+.sidebar{position:sticky;top:73px;max-height:calc(100vh - 92px);overflow:auto;padding-right:12px;scrollbar-width:thin}
+.navtitle{font:700 11px/1.5 system-ui,sans-serif;color:#8493a0;text-transform:uppercase;letter-spacing:.16em;margin-bottom:17px}
+.sidebar ol{list-style:none;margin:0;padding:0}.sidebar li{margin:0 0 4px;font:500 13px/1.44 system-ui,sans-serif}.sidebar a{display:block;border-left:2px solid transparent;padding:8px 8px 8px 13px;color:#66758b;text-decoration:none;border-radius:0 7px 7px 0}.sidebar a.active{border-color:#d58e53;background:#f0eeea;color:#1e4255;font-weight:700}.sidebar a:hover{color:#12455a;background:#eee}
+.mobile-toc{display:none}
+.article{min-width:0}.chapter{padding:0 0 54px;margin:0 0 49px;border-bottom:1px solid var(--line);scroll-margin-top:78px}
+.chapter-kicker{font:700 11px/1.3 system-ui,sans-serif;color:#bb7b4a;text-transform:uppercase;letter-spacing:.2em;margin:0 0 12px}
+h2,h3,h4{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;letter-spacing:-.035em;color:#183c53}
+h2{font-size:clamp(28px,3.3vw,40px);line-height:1.19;margin:0 0 23px;font-weight:790}h3{font-size:25px;line-height:1.27;margin:36px 0 16px;scroll-margin-top:78px}h4{font-size:20px;margin:27px 0 10px}
+p{margin:0 0 18px;hyphens:auto;text-wrap:pretty}.lead{font-size:clamp(19px,2vw,23px);line-height:1.6;color:#465567;margin-bottom:25px}.story-list{padding-left:24px;margin:15px 0 25px}.story-list li{padding-left:5px;margin:8px 0}.story-list li::marker{color:#a27651}
+.callout{margin:28px 0 31px;padding:21px 24px;background:#edf4f5;border-left:4px solid #6b95a6;border-radius:0 13px 13px 0;box-shadow:0 3px 13px #20304408}
+.callout.vibe{background:#f6eee3;border-left-color:#c88c52}.callout-label{font:800 12px/1.3 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#31677d;margin-bottom:8px}.callout.vibe .callout-label{color:#a3652e}.callout p{font-size:17px;margin:0;line-height:1.7}
+.diagram{position:relative;background:#f1f5f6;border:1px solid #dbe5e8;border-radius:13px;padding:20px 22px;margin:23px 0 27px;overflow-x:auto}.diagram::before{content:'СХЕМА';position:absolute;top:6px;right:12px;font:700 9px/1 system-ui,sans-serif;color:#9ab1b8;letter-spacing:.14em}.diagram pre{margin:0;padding:5px 0;white-space:pre;font:14px/1.55 'DejaVu Sans Mono',Consolas,'Liberation Mono',monospace;color:#254e61}
+.table-wrap{overflow-x:auto;margin:24px 0 30px;border:1px solid #e0e6e7;border-radius:12px}.glossary{width:100%;border-collapse:collapse;font:15px/1.55 system-ui,sans-serif}.glossary th{background:#e9f0f2;text-align:left;color:#28556b}.glossary th,.glossary td{padding:12px 14px;vertical-align:top;border-bottom:1px solid #e5ebec}.glossary tr:last-child td{border-bottom:0}.glossary td:first-child{font-weight:650;color:#24465a;width:27%}
+.wiki{color:#266987;text-decoration-style:dotted;text-decoration-thickness:1.5px}.wiki::after{content:'↗';font:600 11px system-ui,sans-serif;margin-left:2px;vertical-align:2px;color:#97a9b5}
+.wiki-guide{margin:0 0 70px;scroll-margin-top:88px;padding:29px 26px 34px;border:1px solid #e2e5e3;border-radius:15px;background:#fff}.wiki-guide h2{font-size:30px;margin-bottom:12px}.wiki-guide p{font-size:16px;color:#617285}.wiki-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}.wiki-grid a{text-decoration:none;border:1px solid #dce8ea;padding:11px 13px;background:#f8fbfc;border-radius:8px;font:600 13px/1.4 system-ui,sans-serif;display:flex;justify-content:space-between;gap:12px;align-items:center}.wiki-grid a span{opacity:.7}.wiki-grid a:hover{background:#eaf3f5}
+.site-footer{border-top:1px solid #e3e4e1;padding:32px 24px;text-align:center;font:13px/1.7 system-ui,sans-serif;color:#82909e}
+@media(max-width:1040px){.layout{gap:34px;grid-template-columns:230px minmax(0,1fr)}.sidebar li{font-size:12px}}
+@media(max-width:800px){.hero-inner{padding:62px 24px 65px}.layout{display:block;padding:30px 20px 66px}.sidebar{display:none}.mobile-toc{display:block;margin:0 0 43px;border:1px solid #e1e7e8;border-radius:12px;background:#fff;overflow:hidden}.mobile-toc summary{padding:13px 18px;font:700 14px system-ui,sans-serif;cursor:pointer}.mobile-toc ol{margin:0;padding:0 18px 16px 38px;font:14px/1.55 system-ui,sans-serif}.mobile-toc li{margin:8px 0}.topbar-inner{padding:10px 20px}.chapter{margin-bottom:37px;padding-bottom:40px}.diagram{padding:17px 14px}.diagram pre{font-size:12px}.wiki-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+@media print{body{background:white;font-size:12pt}.topbar,.sidebar,.mobile-toc{display:none}.hero{color:#132e42;background:white;border-bottom:3px solid #254a5e}.hero::before{display:none}.hero .sub,.hero-bottom{color:#132e42}.hero .eyebrow{color:#3e6070}.layout{display:block;padding:20px 10mm}.chapter{break-inside:auto}.diagram,.callout{break-inside:avoid}.wiki-guide{break-inside:avoid}h2,h3{break-after:avoid}}
+</style></head><body>
+<header class="hero" id="top"><div class="hero-inner">
+<div class="eyebrow">История идей · от 1943 до эпохи LLM</div>
+<h1>Как мы дошли <em>до LLM</em></h1>
+<div class="sub">От первого искусственного нейрона и говорящих роботов из фантастики — до Transformer, attention и загадочной геометрии смысла.</div>
+<div class="hero-bottom"><span class="chip">Научпоп без сложной математики</span><span class="chip">20 разделов</span><span class="chip">Схемы и ссылки на Википедию</span></div>
+</div></header>
+<div class="topbar"><div class="topbar-inner"><span>История нейросетей — путешествие по эпохам</span><a href="#top">↑ Наверх</a></div><div class="progress-track"><div class="progress-bar" id="progress"></div></div></div>
+<div class="layout"><nav class="sidebar" aria-label="Оглавление"><div class="navtitle">Маршрут путешествия</div><ol><li><a href="#part-01">Карта путешествия</a></li><li><a href="#part-02">1. До нейросетей: мечта сделать «искусственный мозг»</a></li><li><a href="#part-03">2. 1960–1970-е: первая встреча с реальностью</a></li><li><a href="#part-04">3. 1980-е: многослойный перцептрон возвращается</a></li><li><a href="#part-05">4. 1990-е: язык заставляет сеть помнить прошлое</a></li><li><a href="#part-06">5. Язык до LLM: n-граммы, статистика и первые нейронные языковые модели</a></li><li><a href="#part-07">6. 2010–2014: данные, GPU и резкий разгон deep learning</a></li><li><a href="#part-08">7. 2014: attention — «не вспоминай всё, посмотри туда, куда нужно»</a></li><li><a href="#part-09">8. 2017: Transformer — убираем рекуррентность</a></li><li><a href="#part-10">9. Самая важная вещь, которую легко пропустить: Transformer всё ещё содержит обычный MLP</a></li><li><a href="#part-11">10. Что такое один современный Transformer-блок целиком</a></li><li><a href="#part-12">11. KV-cache: почему генерация отличается от обучения</a></li><li><a href="#part-13">12. 2018–2022: Transformer превращается в LLM</a></li><li><a href="#part-14">13. Где в модели «знания» и что такое манифолд</a></li><li><a href="#part-15">14. Почему Transformer оказался настолько удачным</a></li><li><a href="#part-16">15. А Transformer — финальная архитектура?</a></li><li><a href="#part-17">16. Вся история в одной картинке</a></li><li><a href="#part-18">17. Мини-словарь после путешествия</a></li><li><a href="#part-19">18. Ключевые работы, если захочется копнуть глубже</a></li><li><a href="#part-20">Финал: что в этой истории особенно красиво</a></li></ol><a href="#wiki-guide">Ссылки для любопытных ↗</a></nav>
+<main class="article"><details class="mobile-toc"><summary>Оглавление — 20 разделов</summary><ol><li><a href="#part-01">Карта путешествия</a></li><li><a href="#part-02">1. До нейросетей: мечта сделать «искусственный мозг»</a></li><li><a href="#part-03">2. 1960–1970-е: первая встреча с реальностью</a></li><li><a href="#part-04">3. 1980-е: многослойный перцептрон возвращается</a></li><li><a href="#part-05">4. 1990-е: язык заставляет сеть помнить прошлое</a></li><li><a href="#part-06">5. Язык до LLM: n-граммы, статистика и первые нейронные языковые модели</a></li><li><a href="#part-07">6. 2010–2014: данные, GPU и резкий разгон deep learning</a></li><li><a href="#part-08">7. 2014: attention — «не вспоминай всё, посмотри туда, куда нужно»</a></li><li><a href="#part-09">8. 2017: Transformer — убираем рекуррентность</a></li><li><a href="#part-10">9. Самая важная вещь, которую легко пропустить: Transformer всё ещё содержит обычный MLP</a></li><li><a href="#part-11">10. Что такое один современный Transformer-блок целиком</a></li><li><a href="#part-12">11. KV-cache: почему генерация отличается от обучения</a></li><li><a href="#part-13">12. 2018–2022: Transformer превращается в LLM</a></li><li><a href="#part-14">13. Где в модели «знания» и что такое манифолд</a></li><li><a href="#part-15">14. Почему Transformer оказался настолько удачным</a></li><li><a href="#part-16">15. А Transformer — финальная архитектура?</a></li><li><a href="#part-17">16. Вся история в одной картинке</a></li><li><a href="#part-18">17. Мини-словарь после путешествия</a></li><li><a href="#part-19">18. Ключевые работы, если захочется копнуть глубже</a></li><li><a href="#part-20">Финал: что в этой истории особенно красиво</a></li></ol></details>
+<section class="chapter" id="part-01">
+<div class="chapter-kicker">Глава 01</div>
+<h2>Карта путешествия</h2>
+<p class="lead">Сегодня языковая модель пишет код, объясняет математику, анализирует документы и может вести длинный диалог. Но ни Transformer, ни LLM не возникли «из воздуха»: это конец очень длинной цепочки идей.</p>
+<p>Мы пойдём по этой цепочке не как по списку дат, а как по серии вопросов. Сначала люди спрашивали: можно ли вообще заставить машину обучаться? Потом — зачем нужны скрытые слои? Как помнить последовательность? Как не забывать далёкое прошлое? Как выбирать нужный кусок контекста? Как обрабатывать слова параллельно? И наконец — что произойдёт, если всё это увеличить в тысячу раз и накормить почти всем доступным текстом?</p>
+<ul class="story-list">
+<li>1940–1950-е: искусственный нейрон и первый перцептрон.</li>
+<li>1960–1970-е: ранний восторг, жёсткие ограничения и первая большая трезвость.</li>
+<li>1980-е: возвращение многослойных сетей и backpropagation.</li>
+<li>1990-е: последовательности, RNN и проблема памяти.</li>
+<li>1997: LSTM и гейты — «что запомнить, что забыть».</li>
+<li>2000-е: статистические языковые модели, эмбеддинги и нейронная LM Бенжио.</li>
+<li>2014: seq2seq и attention — динамические связи между частями последовательности.</li>
+<li>2017: Transformer — attention становится центральным механизмом.</li>
+<li>2018–2020-е: предобучение, масштабирование, instruction tuning и появление LLM как универсального интерфейса к знаниям.</li>
+<li>Внутри современного слоя: QKV, multi-head, FFN, residual, нормализация и KV-cache.</li>
+<li>Геометрическая интуиция: признаки, пространства представлений и «манифолд» смысла.</li>
+</ul>
+<aside class="callout"><div class="callout-label">Как читать</div><p>Не пытайся запомнить все фамилии и годы. Для понимания важнее линия: какая была проблема → какая появилась идея → что эта идея позволила сделать дальше.</p></aside>
+</section>
+<section class="chapter" id="part-02">
+<div class="chapter-kicker">Глава 02</div>
+<h2>1. До нейросетей: мечта сделать «искусственный мозг»</h2>
+<p class="lead">Компьютеры середины XX века были огромными, дорогими и по нынешним меркам невероятно слабыми. Но идея машинного разума появилась почти сразу вместе с ними.</p>
+<p>В 1940-е компьютер ещё не был личным устройством — это была комната с шкафами электроники. Программы загружались с перфокарт или лент, память измерялась величинами, от которых сегодня рассмеялся бы даже микроконтроллер в чайнике.</p>
+<p>Но прежде чем разбираться в машинах, давай посмотрим на собственную руку. Представь: ты случайно коснулся горячей сковородки. Палец отдёргивается почти сам собой — иногда раньше, чем ты успеешь толком осознать боль.</p>
+<p>В коже есть чувствительные нервные окончания. Они отправляют электрические сигналы по нервным волокнам. Через цепочку нейронов в спинном мозге команда доходит до мышцы, и рука отдёргивается. Это называется <a class="wiki" href="https://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D1%84%D0%BB%D0%B5%D0%BA%D1%82%D0%BE%D1%80%D0%BD%D0%B0%D1%8F_%D0%B4%D1%83%D0%B3%D0%B0" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">рефлекторной дугой</a>. Важно: в настоящем организме срабатывает целая цепь клеток, а не один-единственный нейрон.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>жар на пальце → чувствительный нейрон
+                       ↓
+                  спинной мозг
+                       ↓
+                  двигательный нейрон
+                       ↓
+                 мышца сокращается → рука отдёрнулась</pre></div>
+<p>А теперь представь одну клетку из этой цепочки. К ней приходят импульсы от других клеток. Одни сигналы возбуждают её, другие, наоборот, мешают сработать. Если суммарное воздействие оказывается достаточно сильным, нейрон запускает собственный электрический импульс. И всё же исследователи уже тогда задавались удивительным вопросом: можно ли описать хотя бы такую упрощённую логику нервной клетки математически?</p>
+<p>В 1943 году <a class="wiki" href="https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D0%BA-%D0%9A%D0%B0%D0%BB%D0%BB%D0%BE%D0%BA,_%D0%A3%D0%BE%D1%80%D1%80%D0%B5%D0%BD" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">Уоррен Маккаллок</a> и <a class="wiki" href="https://ru.wikipedia.org/wiki/%D0%9F%D0%B8%D1%82%D1%82%D1%81,_%D0%A3%D0%BE%D0%BB%D1%82%D0%B5%D1%80" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">Уолтер Питтс</a> предложили очень упрощённую модель нейрона. Он получает несколько сигналов, складывает их и выдаёт ответ «да/нет», если сумма превысила порог. Современный нейрон сложнее, но зерно идеи уже здесь: множество входов, веса, сумма и нелинейное решение.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>x1 ──w1─┐
+x2 ──w2─┼──► сумма ─► порог ─► 0 или 1
+x3 ──w3─┘</pre></div>
+<p>Самое важное: вес w говорит, насколько сильно конкретный вход влияет на результат. Если мы научимся автоматически подбирать веса, сеть сможет не просто выполнять написанную человеком формулу, а подстраиваться под примеры.</p>
+<p>И вот тут давай на минуту помечтаем вместе с учёными той эпохи. Один искусственный нейрон — занятная штука: сложил несколько чисел и щёлкнул переключателем. А что, если соединить между собой десятки, тысячи, а потом миллионы таких нейронов? Может, первые начнут различать линии, следующие — фигуры, ещё следующие — предметы… А где-нибудь наверху внезапно появится нечто вроде мысли?</p>
+<p>Представь настроение людей в 1950-е. Пенициллин и другие антибиотики уже меняют медицину. Электричество, бытовая техника, радио и телевидение меняют повседневную жизнь. Ракетная техника развивается так быстро, что полёт человека в космос кажется не фантастикой, а вопросом ближайших лет. Если мы смогли сделать всё это, почему бы не построить мыслящую машину?</p>
+<p>Казалось, искусственный интеллект уже вот-вот появится. Только история приготовила неприятный сюрприз: между нейроном, который различает два числа, и машиной, способной разговаривать о философии, лежит целый лабиринт открытий. Нам ещё понадобятся многослойные сети, способы обучения, память, внимание, гигантские вычисления — и десятилетия проб и ошибок.</p>
+<aside class="callout vibe"><div class="callout-label">Вайб эпохи</div><p>В кино уже появляются обаятельные роботы, которые го-во-рят маши́н-ны-ми го-ло-са-ми. В фильме <a class="wiki" href="https://ru.wikipedia.org/wiki/%D0%97%D0%B0%D0%BF%D1%80%D0%B5%D1%82%D0%BD%D0%B0%D1%8F_%D0%BF%D0%BB%D0%B0%D0%BD%D0%B5%D1%82%D0%B0" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">«Запретная планета»</a> (1956) робот Робби — настоящий любимец публики. В 1957-м на орбиту отправится первый <a class="wiki" href="https://ru.wikipedia.org/wiki/%D0%A1%D0%BF%D1%83%D1%82%D0%BD%D0%B8%D0%BA-1" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">спутник</a>, в 1961-м полетит <a class="wiki" href="https://ru.wikipedia.org/wiki/%D0%93%D0%B0%D0%B3%D0%B0%D1%80%D0%B8%D0%BD,_%D0%AE%D1%80%D0%B8%D0%B9_%D0%90%D0%BB%D0%B5%D0%BA%D1%81%D0%B5%D0%B5%D0%B2%D0%B8%D1%87" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">Юрий Гагарин</a>. На этом фоне разумный робот кажется почти неизбежным следующим пунктом программы. Жаль, что сами нейросети пока умеют в основном складывать числа — и то с большими оговорками.</p></aside>
+<h3 id="topic-01"><a class="wiki" href="https://ru.wikipedia.org/wiki/%D0%9F%D0%B5%D1%80%D1%86%D0%B5%D0%BF%D1%82%D1%80%D0%BE%D0%BD" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">Перцептрон</a> Розенблатта: первая большая волна оптимизма</h3>
+<p>В конце 1950-х <a class="wiki" href="https://ru.wikipedia.org/wiki/%D0%A0%D0%BE%D0%B7%D0%B5%D0%BD%D0%B1%D0%BB%D0%B0%D1%82%D1%82,_%D0%A4%D1%80%D1%8D%D0%BD%D0%BA" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">Фрэнк Розенблатт</a> построил перцептрон — систему, которая могла корректировать веса на примерах. Mark I Perceptron использовал массив светочувствительных элементов и предназначался для распознавания простых визуальных образов. Это был очень ранний предок классификаторов изображений.</p>
+<p>Принцип обучения можно объяснить по-школьному. Показываем системе пример. Она отвечает. Если ошиблась — немного двигаем веса в сторону правильного ответа. Повторяем много раз. Никакой магии: просто постепенно меняем числа так, чтобы ошибки становились меньше.</p>
+<p>И вот здесь спрятан главный повторяющийся сюжет всей истории ИИ: показали пример → получили ошибку → чуть-чуть поправили веса → показали следующий. И снова. И снова. И ещё немножко. Настолько «немножко», что через много лет речь пойдёт уже о колоссальных объёмах данных и астрономическом количестве вычислений. Из-за этой необходимости учиться на множестве примеров развитие ИИ не раз упиралось в скорость компьютеров. Мы ещё вернёмся к этому, когда появятся мощные видеокарты и огромные датасеты.</p>
+<p>Пока у перцептрона правило корректировки весов довольно простое. Позже нам придётся придумать способ обучать сразу много скрытых слоёв — тот самый backpropagation. Но основная философия останется прежней: не расписывать разум вручную по пунктам, а дать системе множество примеров и позволить ей подстроить свои числа.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>пример → сеть → ответ
+             │
+         сравнить с правильным
+             │
+          поправить веса
+             └───────────────► следующий пример</pre></div>
+<p>И вот здесь появляется культурно важная идея, которая доживёт до современных LLM: поведение модели определяется не набором вручную написанных правил, а огромным количеством чисел, найденных во время обучения.</p>
+</section>
+<section class="chapter" id="part-03">
+<div class="chapter-kicker">Глава 03</div>
+<h2>2. 1960–1970-е: первая встреча с реальностью</h2>
+<p class="lead">Ранний успех породил ощущение, что ещё немного — и машины начнут видеть, читать и рассуждать почти как люди. Оказалось, что между «различить простые фигуры» и «понять мир» лежит пропасть.</p>
+<p>Один перцептрон умеет проводить по пространству входов фактически одну разделяющую границу. Представь точки двух цветов на листе бумаги. Если их можно разделить прямой — перцептрон счастлив. Если классы переплетены сложнее, одного слоя недостаточно.</p>
+<p>Самый знаменитый учебный пример — XOR. Для двух бинарных входов положительными считаются случаи, когда входы различаются. Эти точки нельзя отделить одной прямой. Сегодня решение очевидно: добавить скрытый слой. Но в конце 1960-х вычислительные ресурсы, методы обучения и теория были далеко не теми, что сейчас.</p>
+<p>После книги <a class="wiki" href="https://ru.wikipedia.org/wiki/%D0%9C%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9,_%D0%9C%D0%B0%D1%80%D0%B2%D0%B8%D0%BD" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">Марвина Минского</a> и <a class="wiki" href="https://ru.wikipedia.org/wiki/%D0%9F%D0%B5%D0%B9%D0%BF%D0%B5%D1%80%D1%82,_%D0%A1%D0%B5%D0%B9%D0%BC%D1%83%D1%80" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">Сеймура Пейперта</a> 1969 года ограничения однослойных перцептронов стали особенно заметны. История часто пересказывается слишком драматично — будто одна книга «убила нейросети». В реальности причин охлаждения было больше: слабые компьютеры, завышенные обещания, нехватка данных и отсутствие удобного способа обучать глубокие сети.</p>
+<aside class="callout vibe"><div class="callout-label">Вайб эпохи</div><p>На дворе 1970-е: мини-компьютер всё ещё может стоить как квартира, память драгоценна, а слово «облако» означает в основном погоду. Зато по радио уже <a class="wiki" href="https://ru.wikipedia.org/wiki/ABBA" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">ABBA</a> и диско. Нейросетям до миллиардов параметров примерно как кассетному магнитофону до стриминга 4K.</p></aside>
+<p>Это хороший урок истории ИИ: идея может быть правильной, но родиться слишком рано. Нужны одновременно теория, железо, данные и инженерная культура. Если не хватает хотя бы одного элемента, технология выглядит тупиковой.</p>
+</section>
+<section class="chapter" id="part-04">
+<div class="chapter-kicker">Глава 04</div>
+<h2>3. 1980-е: многослойный перцептрон возвращается</h2>
+<p class="lead">Главный прорыв 1980-х состоял не в изобретении скрытых слоёв как таковых, а в том, что стало понятно, как удобно обучать много слоёв вместе.</p>
+<p><a class="wiki" href="https://ru.wikipedia.org/wiki/%D0%9C%D0%BD%D0%BE%D0%B3%D0%BE%D1%81%D0%BB%D0%BE%D0%B9%D0%BD%D1%8B%D0%B9_%D0%BF%D0%B5%D1%80%D1%86%D0%B5%D0%BF%D1%82%D1%80%D0%BE%D0%BD" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">Многослойный перцептрон</a>, MLP, выглядит почти как школьная схема: входной слой, один или несколько скрытых слоёв и выход. Каждый нейрон скрытого слоя получает числа с предыдущего слоя, умножает их на веса, складывает, применяет нелинейную функцию и передаёт результат дальше.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>входы            скрытый слой            выход
+x1 ───────┐       ●  ●  ●
+x2 ───────┼────►  ●  ●  ●  ───────►     ●
+x3 ───────┘       ●  ●  ●</pre></div>
+<p>Если бы между слоями не было нелинейности, несколько линейных преобразований можно было бы математически свернуть в одно. Нелинейность — ReLU, sigmoid, tanh и другие функции — позволяет сети строить сложные искривлённые границы и комбинировать признаки.</p>
+<p>Ключевым инструментом стал backpropagation — <a class="wiki" href="https://ru.wikipedia.org/wiki/%D0%9C%D0%B5%D1%82%D0%BE%D0%B4_%D0%BE%D0%B1%D1%80%D0%B0%D1%82%D0%BD%D0%BE%D0%B3%D0%BE_%D1%80%D0%B0%D1%81%D0%BF%D1%80%D0%BE%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B5%D0%BD%D0%B8%D1%8F_%D0%BE%D1%88%D0%B8%D0%B1%D0%BA%D0%B8" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">обратное распространение ошибки</a>. Сначала сеть делает прямой проход и получает ответ. Затем ошибка математически «разматывается назад» по цепочке операций. Для каждого веса вычисляется: если чуть изменить именно это число, насколько изменится итоговая ошибка? После этого оптимизатор делает небольшой шаг в полезную сторону.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>прямой проход:     вход ─► слой 1 ─► слой 2 ─► ответ
+                                            │
+                                            ▼
+                                         ошибка
+                                            │
+обратный проход:   веса ◄──── градиенты ◄───┘</pre></div>
+<p>Именно здесь рождается привычный нам образ глубокой сети: нижние слои находят простые признаки, следующие комбинируют их в более сложные. Для изображения это может быть «край → угол → часть объекта → объект». Для языка позже возникнет похожая интуиция: «форма слова → грамматика → отношения → смысл».</p>
+<aside class="callout"><div class="callout-label">Что важно запомнить</div><p>FFN внутри современного <a class="wiki" href="https://ru.wikipedia.org/wiki/%D0%A2%D1%80%D0%B0%D0%BD%D1%81%D1%84%D0%BE%D1%80%D0%BC%D0%B5%D1%80_(%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%8C_%D0%BC%D0%B0%D1%88%D0%B8%D0%BD%D0%BD%D0%BE%D0%B3%D0%BE_%D0%BE%D0%B1%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D1%8F)" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">Transformer</a> по своей сути остаётся потомком этого самого MLP: Linear → нелинейность → Linear. Transformer не отменил старую нейросеть; он встроил её в более хитрую систему.</p></aside>
+</section>
+<section class="chapter" id="part-05">
+<div class="chapter-kicker">Глава 05</div>
+<h2>4. 1990-е: язык заставляет сеть помнить прошлое</h2>
+<p class="lead">С картинкой проще: вся картинка уже лежит перед сетью. С текстом иначе — порядок имеет значение. «Собака укусила человека» и «человек укусил собаку» состоят почти из тех же слов, но смысл другой.</p>
+<p>Так появились <a class="wiki" href="https://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D0%BA%D1%83%D1%80%D1%80%D0%B5%D0%BD%D1%82%D0%BD%D0%B0%D1%8F_%D0%BD%D0%B5%D0%B9%D1%80%D0%BE%D0%BD%D0%BD%D0%B0%D1%8F_%D1%81%D0%B5%D1%82%D1%8C" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">рекуррентные нейронные сети</a> — RNN. Их идея: вместе с очередным элементом последовательности передавать дальше внутреннее состояние h. Это состояние — краткая память о том, что сеть уже увидела.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>слово1 ─► [RNN] ─► h1
+               │
+слово2 ───────►[RNN] ─► h2
+                         │
+слово3 ─────────────────►[RNN] ─► h3</pre></div>
+<p>Один и тот же блок повторяется снова и снова. В отличие от обычного MLP, сеть теперь может обрабатывать последовательность любой длины и в принципе учитывать прошлое. Для языка это огромный шаг.</p>
+<p>Но возникла неприятность: при обучении сигнал ошибки должен проходить назад через много временных шагов. Умножения повторяются снова и снова, и градиент может либо становиться почти нулевым, либо взрываться. Поэтому обычная RNN плохо удерживала далёкие зависимости.</p>
+<p>Например: «Книга, которую я вчера купил в маленьком магазине возле вокзала, оказалась…». Чтобы правильно продолжить фразу, нужно помнить слово «книга», хотя между ним и сказуемым много других слов. Обычной RNN это давалось плохо.</p>
+<h3 id="topic-02">1997: <a class="wiki" href="https://ru.wikipedia.org/wiki/%D0%94%D0%BE%D0%BB%D0%B3%D0%B0%D1%8F_%D0%BA%D1%80%D0%B0%D1%82%D0%BA%D0%BE%D1%81%D1%80%D0%BE%D1%87%D0%BD%D0%B0%D1%8F_%D0%BF%D0%B0%D0%BC%D1%8F%D1%82%D1%8C" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">LSTM</a> и идея управляемой памяти</h3>
+<p>LSTM — Long Short-Term Memory — добавила к рекуррентному состоянию специальную линию памяти и набор гейтов. Гейт — это не магическая дверь, а маленькая обучаемая функция, которая выдаёт значения примерно от 0 до 1 и тем самым регулирует поток информации.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>старая память c(t-1)
+        │
+        ├── forget gate: что забыть
+        ├── input gate:  что записать
+        └── output gate: что показать наружу
+        │
+        ▼
+новая память c(t) + скрытое состояние h(t)</pre></div>
+<p>Это важный этап нашей истории: сеть научилась не просто «тащить всё прошлое вперёд», а выборочно сохранять и стирать информацию. Современные gated-архитектуры вроде GRU, а позже некоторые альтернативы Transformer, унаследуют тот же общий принцип.</p>
+<aside class="callout vibe"><div class="callout-label">Вайб эпохи</div><p>Интернет уже входит в дома, но модем ещё пищит. Windows 95 кажется космосом. На фоне будущих LLM нейросети малы, а обучение одной серьёзной модели — отдельный исследовательский проект. Но идея «машина хранит контекст во внутреннем состоянии» уже почти на месте.</p></aside>
+</section>
+<section class="chapter" id="part-06">
+<div class="chapter-kicker">Глава 06</div>
+<h2>5. Язык до LLM: n-граммы, статистика и первые нейронные языковые модели</h2>
+<p class="lead">До современных LLM компьютеры уже умели предсказывать слова. Только делали это гораздо грубее.</p>
+<h3 id="topic-03">N-граммы: «посчитаем, что обычно идёт после чего»</h3>
+<p>Если в огромной коллекции текстов после слов «доброе» и «утро» часто идёт определённое продолжение, можно использовать частоты как вероятности. N-граммная модель смотрит на несколько предыдущих слов и выбирает вероятное следующее.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>«я хочу выпить» + статистика корпуса
+             ↓
+кофе  0.42
+чай   0.21
+воды  0.08
+...</pre></div>
+<p>Плюс n-грамм — простота и предсказуемость. Минус — комбинаторный взрыв. Последовательностей слов невероятно много, а фиксированное окно не умеет понимать далёкий контекст. Фразы, которых модель не встречала, становятся проблемой.</p>
+<h3 id="topic-04">2003: нейронная языковая модель Бенжио</h3>
+<p>В начале 2000-х важной идеей стало представлять слова не как независимые ярлыки, а как обучаемые векторы — embeddings. Если два слова используются похожим образом, их векторы могут оказаться близки. Это позволяет переносить знания между похожими словами.</p>
+<p>В работе <a class="wiki" href="https://ru.wikipedia.org/wiki/%D0%91%D0%B5%D0%BD%D0%B6%D0%B8%D0%BE,_%D0%99%D0%BE%D1%88%D1%83%D0%B0" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">Йошуа Бенжио</a> и соавторов 2003 года несколько предыдущих слов превращались в embeddings, объединялись и подавались в feed-forward нейросеть, которая предсказывала следующее слово. Это уже очень узнаваемый предок современной языковой модели.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>слово1 ─► embedding ┐
+слово2 ─► embedding ├──► MLP/FFN ─► вероятности следующего слова
+слово3 ─► embedding ┘</pre></div>
+<p>Главное отличие от n-грамм: сеть могла использовать общность между словами. Если «кот» и «собака» занимают похожие области пространства, знание об одном частично помогает другому. Но окно контекста всё ещё оставалось фиксированным.</p>
+<aside class="callout"><div class="callout-label">Первая геометрическая интуиция</div><p>Слово теперь не просто номер в словаре, а точка в многомерном пространстве. Позже эта идея вырастет в целые пространства контекстных представлений, где положение токена зависит от предложения.</p></aside>
+</section>
+<section class="chapter" id="part-07">
+<div class="chapter-kicker">Глава 07</div>
+<h2>6. 2010–2014: данные, GPU и резкий разгон deep learning</h2>
+<p class="lead">К началу 2010-х наконец совпали несколько вещей: большие датасеты, быстрые GPU, удобные методы обучения и достаточно глубокие сети. Старые идеи внезапно начали работать намного лучше.</p>
+<p>2012 год стал символическим моментом благодаря <a class="wiki" href="https://ru.wikipedia.org/wiki/AlexNet" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">AlexNet</a> и <a class="wiki" href="https://ru.wikipedia.org/wiki/ImageNet" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">ImageNet</a>: глубокая сверточная сеть резко улучшила качество распознавания изображений. Это был сигнал всей индустрии: масштабирование нейросетей на GPU — не игрушка.</p>
+<p>В языке примерно в тот же период стали массово использоваться распределённые представления слов. <a class="wiki" href="https://ru.wikipedia.org/wiki/Word2vec" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">Word2Vec</a> показал, насколько полезной может быть простая идея: обучать векторы так, чтобы слова, встречающиеся в похожем контексте, имели похожую геометрию.</p>
+<h3 id="topic-05">2014: seq2seq — одна сеть читает, другая пишет</h3>
+<p>Для <a class="wiki" href="https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D1%88%D0%B8%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BF%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">машинного перевода</a> естественной стала схема encoder–decoder. Encoder читает предложение и сворачивает его в внутреннее состояние. Decoder, начиная с этого состояния, генерирует перевод по одному токену.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>«The cat is sleeping»
+          ↓
+       Encoder
+          ↓
+   [вектор смысла]
+          ↓
+       Decoder
+          ↓
+      «Кошка спит»</pre></div>
+<p>Проблема очевидна: всё исходное предложение пытаются запихнуть в один фиксированный вектор. Для коротких фраз это терпимо. Для длинных — возникает бутылочное горлышко. Модель как будто читает страницу, закрывает книгу и затем пытается пересказать её по одной-единственной заметке.</p>
+</section>
+<section class="chapter" id="part-08">
+<div class="chapter-kicker">Глава 08</div>
+<h2>7. 2014: attention — «не вспоминай всё, посмотри туда, куда нужно»</h2>
+<p class="lead">Attention возник как очень практичное решение бутылочного горлышка encoder–decoder: декодеру разрешили на каждом шаге заново смотреть на все состояния энкодера.</p>
+<p>Представим перевод. Когда decoder генерирует слово «cat», ему особенно полезна та часть исходного предложения, где было «кот». Когда генерирует глагол — важнее другая часть. Вместо одного общего вектора контекста модель строит динамическую взвешенную смесь.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>Encoder states:
+h1   h2   h3   h4   h5
+ \    |   /      \   |
+  \   |  /        \  |
+   attention weights
+          ↓
+   context for THIS step</pre></div>
+<p>Вот здесь впервые появляется фундаментально новая для нашей линии вещь: сила связи зависит от текущего содержимого. В обычном MLP после обучения вес между двумя нейронами фиксирован. В attention модель каждый раз вычисляет, насколько один элемент должен смотреть на другой.</p>
+<aside class="callout"><div class="callout-label">Главная интуиция</div><p>MLP — фиксированная проводка после обучения. Attention — динамическая проводка, которая перестраивается под конкретный вход.</p></aside>
+<h3 id="topic-06">А где Q, K и V?</h3>
+<p>В раннем attention ещё не обязательно использовались современные буквы Q, K и V, но смысл уже присутствовал. Есть то, что ищет информацию, — query. Есть признаки, по которым можно понять, куда смотреть, — keys. И есть содержимое, которое мы получим, если туда посмотрим, — values.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>Q — Query: «что я сейчас ищу?»
+K — Key:   «по каким признакам меня можно найти?»
+V — Value: «что я передам, если меня выбрали?»</pre></div>
+<p>Удобная аналогия — библиотека. Запрос Q похож на тему, которую ты ищешь. K — карточки каталога. V — сами книги. Сначала сравниваем запрос с карточками, а потом берём содержимое подходящих книг.</p>
+</section>
+<section class="chapter" id="part-09">
+<div class="chapter-kicker">Глава 09</div>
+<h2>8. 2017: Transformer — убираем рекуррентность</h2>
+<p class="lead">Статья “<a class="wiki" href="https://ru.wikipedia.org/wiki/%D0%92%D0%BD%D0%B8%D0%BC%D0%B0%D0%BD%D0%B8%D0%B5_%E2%80%94_%D1%8D%D1%82%D0%BE_%D0%B2%D1%81%D1%91,_%D1%87%D1%82%D0%BE_%D0%B2%D0%B0%D0%BC_%D0%BD%D1%83%D0%B6%D0%BD%D0%BE" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">Attention Is All You Need</a>” сделала радикальный шаг: раз attention уже умеет связывать элементы последовательности, зачем вообще последовательно проталкивать состояние через RNN?</p>
+<p>В RNN токен номер 100 нельзя полностью обработать, пока не пройдены 1…99. Это естественно, но неудобно для GPU, которые любят делать много одинаковых операций параллельно. Transformer во время обучения позволил обрабатывать все позиции одновременно и связывать их через self-attention.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>RNN:
+t1 → t2 → t3 → t4 → t5
+(последовательно)
+
+Transformer:
+t1 ─┐
+t2 ─┼── self-attention ─► новые t1…t5
+t3 ─┤
+t4 ─┤
+t5 ─┘
+(много операций параллельно)</pre></div>
+<p>Self-attention означает, что Q, K и V строятся из одной и той же последовательности. Каждый токен получает возможность спросить: какие предыдущие токены сейчас важны для моего нового представления?</p>
+<h3 id="topic-07">Scaled dot-product attention по шагам</h3>
+<p>Для каждого токена есть вектор состояния x. Три разные обученные матрицы превращают его в Q, K и V. Дальше query одного токена сравнивается с keys разрешённых токенов с помощью скалярного произведения. Большое совпадение означает: «этот токен релевантен».</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>x ─► Wq ─► Q
+x ─► Wk ─► K
+x ─► Wv ─► V
+
+Q · K  → оценки релевантности
+softmax → веса внимания
+веса × V → смесь информации</pre></div>
+<p>Softmax превращает оценки в положительные веса, сумма которых равна единице. Поэтому результат можно грубо представить как взвешенное среднее value-векторов.</p>
+<p>В автогенеративной LLM используется causal mask: токен может смотреть на себя и прошлое, но не в будущее. Иначе во время обучения модель подсматривала бы правильный ответ.</p>
+<h3 id="topic-08">Multi-head attention: несколько взглядов одновременно</h3>
+<p>Одна карта внимания вынуждена была бы смешивать разные типы связей. Поэтому Transformer использует несколько attention-heads. Каждая голова имеет собственные проекции Q, K и V и может научиться выделять свои отношения.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>одни состояния токенов
+       │
+ ┌─────┼─────┬─────┐
+ ▼     ▼     ▼     ▼
+head1 head2 head3 head4
+ └─────┼─────┴─────┘
+       ▼
+   объединение
+       ▼
+     W_O</pre></div>
+<p>Не надо понимать это слишком буквально: нет гарантии, что «голова №7 отвечает за местоимения», а «голова №11 — за синтаксис». Реальные роли распределены и часто смешаны. Но многоголовость даёт модели несколько независимых пространств для поиска связей.</p>
+</section>
+<section class="chapter" id="part-10">
+<div class="chapter-kicker">Глава 10</div>
+<h2>9. Самая важная вещь, которую легко пропустить: Transformer всё ещё содержит обычный MLP</h2>
+<p class="lead">После всей магии attention каждый Transformer-блок делает очень старомодную вещь: прогоняет каждый токен через небольшой многослойный перцептрон. Это и есть FFN — Feed-Forward Network.</p>
+<p>Возьмём один токен. Пусть его состояние — 4096 чисел. После attention это уже не просто «слово», а слово с примесью контекста: информация о соседях, синтаксисе, дальних зависимостях и так далее.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>контекстный вектор токена: 4096 чисел
+                 ↓
+        Linear: 4096 → 11008
+                 ↓
+           нелинейность
+                 ↓
+        Linear: 11008 → 4096
+                 ↓
+        новый вектор токена</pre></div>
+<p>Да: фраза «4096 → 11008» буквально означает, что первая линейная проекция вычисляет 11008 новых чисел. Каждый из этих выходов — взвешенная сумма 4096 входов. Это очень похоже на слой из 11008 нейронов в классическом MLP.</p>
+<p>Нелинейность применяется поэлементно. В ранних Transformer это была ReLU; позже широко применялись GELU, SiLU и gated-варианты вроде SwiGLU. После неё второй линейный слой снова собирает 4096 чисел, чтобы размер состояния совпал с размером модели.</p>
+<h3 id="topic-09">Зачем сначала расширять пространство?</h3>
+<p>Интуитивно: в 4096 исходных координатах признаки могут быть сильно наложены друг на друга. Проекция в более широкое пространство создаёт много комбинаций этих признаков; нелинейность позволяет выборочно усилить одни комбинации и подавить другие; затем второй слой собирает результат обратно.</p>
+<p>Можно сказать: attention приносит токену сведения от других токенов, а FFN “переваривает” получившуюся комбинацию. Это не строгая математическая роль, но очень полезная инженерная интуиция.</p>
+<aside class="callout"><div class="callout-label">Наша формулировка из разговора</div><p>Attention — токены совещаются. FFN — каждый токен думает над услышанным.</p></aside>
+<h3 id="topic-10">SwiGLU: современный FFN уже с воротами</h3>
+<p>Во многих современных LLM FFN не выглядит как совсем простой Linear → GELU → Linear. Часто есть две параллельные проекции: одна несёт содержимое, другая через SiLU работает как обучаемый гейт. Затем ветки перемножаются и проектируются обратно.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>                ┌─► Linear ─► SiLU ─┐
+вектор 4096 ────┤                   × ─► Linear ─► 4096
+                └─► Linear ─────────┘</pre></div>
+<p>Исторически это красиво замыкает круг: идея гейтов, знакомая ещё по LSTM, снова оказывается полезной внутри Transformer, хотя уже в другом месте и в другой форме.</p>
+</section>
+<section class="chapter" id="part-11">
+<div class="chapter-kicker">Глава 11</div>
+<h2>10. Что такое один современный Transformer-блок целиком</h2>
+<p class="lead">Теперь можно собрать детали в одну картину. В типичной современной decoder-only LLM слой чередует два типа работы: обмен информацией между токенами и преобразование признаков внутри каждого токена.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>вход X
+  │
+RMSNorm
+  │
+Attention ──────────────┐
+  │                     │
+  └────── + X ◄─────────┘   residual
+  │
+RMSNorm
+  │
+FFN / SwiGLU ───────────┐
+  │                     │
+  └────── + вход ◄──────┘   residual
+  │
+выход слоя</pre></div>
+<p>Residual connection — это прямой обходной путь. Вместо «замени старое состояние результатом блока» используется «добавь полезную поправку к старому состоянию». Благодаря этому глубокие сети обучаются значительно стабильнее: информация и градиенты получают короткие пути через десятки и сотни слоёв.</p>
+<p>RMSNorm или LayerNorm стабилизирует масштаб представления. Это отдельная операция; FFN сама по себе не является нормализацией.</p>
+<h3 id="topic-11">Что будет, если вытащить attention?</h3>
+<p>Это был один из ключевых вопросов нашего разговора. Если просто удалить attention и не поставить ничего вместо него, останется набор FFN, которые независимо обрабатывают каждый токен.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>токен 1 → FFN → FFN → FFN
+tокен 2 → FFN → FFN → FFN
+tокен 3 → FFN → FFN → FFN
+
+между строками нет обмена информацией</pre></div>
+<p>Сколько ни добавляй таких слоёв, токен «поймала» не узнает, что перед ним было «не», а субъектом была «кошка». FFN может очень сложно преобразовывать собственный вектор, но сама по себе не переносит информацию между позициями.</p>
+<p>Поэтому можно сказать: Transformer действительно как будто «разрезал» обычную вертикальную стопку MLP и между этапами вставил динамический механизм связи между объектами. Это не буквальное описание схемы нейрон за нейроном, но как концептуальная картинка оно очень удачное.</p>
+<aside class="callout"><div class="callout-label">Точная формулировка</div><p>FFN — старый добрый MLP внутри каждого слоя. Attention — дополнительный механизм token mixing: он позволяет состояниям разных токенов обмениваться информацией перед следующим MLP-преобразованием.</p></aside>
+</section>
+<section class="chapter" id="part-12">
+<div class="chapter-kicker">Глава 12</div>
+<h2>11. KV-cache: почему генерация отличается от обучения</h2>
+<p class="lead">Во время обучения Transformer часто видит целый фрагмент текста сразу. Во время ответа чат-бот генерирует текст токен за токеном — и здесь появляется KV-cache.</p>
+<p>Предположим, модель уже обработала 5000 токенов разговора и генерирует 5001-й. Для каждого прошлого токена на каждом attention-слое уже были вычислены K и V. Пересчитывать их снова бессмысленно, поэтому они сохраняются в KV-cache.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>прошлые токены
+   ↓
+K1,V1  K2,V2  K3,V3 ...  ← сохранены
+                     ▲
+новый токен → Q ─────┘
+         сравнить Q с прошлыми K
+         собрать смесь прошлых V</pre></div>
+<p>Query текущего токена нужен только сейчас. Key и Value прошлого пригодятся снова для каждого нового токена, поэтому именно они кэшируются.</p>
+<p>В классическом Multi-Head Attention у каждой головы свои K и V. В современных моделях ради экономии памяти часто используется GQA — Grouped-Query Attention: несколько query-heads делят одну KV-head. MQA идёт ещё дальше и делает одну общую KV-head для множества query-heads.</p>
+<p>Это важный практический момент: большие контексты требуют много памяти не только из-за весов модели, но и из-за KV-cache, который растёт вместе с длиной разговора.</p>
+</section>
+<section class="chapter" id="part-13">
+<div class="chapter-kicker">Глава 13</div>
+<h2>12. 2018–2022: Transformer превращается в LLM</h2>
+<p class="lead">Transformer сам по себе — архитектура. LLM появилась, когда эту архитектуру начали предобучать в огромном масштабе на задаче предсказания текста.</p>
+<p>GPT-1 в 2018 году показал мощь универсального предобучения: сначала модель учится на большом количестве текста без ручной разметки, затем её можно адаптировать под конкретные задачи. В том же году BERT показал другой вариант Transformer-предобучения для понимания текста.</p>
+<p>GPT-2 в 2019-м удивил качеством длинной генерации. GPT-3 в 2020-м сделал особенно заметным эффект масштаба: достаточно большая модель начала выполнять новые задачи просто по нескольким примерам в промпте, без отдельного дообучения для каждой задачи.</p>
+<p>Это и есть один из самых удивительных моментов истории: задача обучения формально остаётся почти смешно простой — предскажи следующий токен. Но чтобы делать это хорошо на невероятно разнообразном тексте, сеть вынуждена внутренне моделировать синтаксис, факты, стили, типовые рассуждения, код, структуру диалога и множество закономерностей мира.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>огромный корпус текста
+        ↓
+«предскажи следующий токен» × триллионы примеров
+        ↓
+веса постепенно впитывают статистические структуры языка и мира
+        ↓
+универсальная модель</pre></div>
+<h3 id="topic-12">Почему чат-бот появился не сразу</h3>
+<p>Базовая языковая модель умеет продолжать текст, но не обязана быть удобным помощником. Ей нужно объяснить, что пользовательский запрос — это инструкция, что нужно отвечать полезно, соблюдать формат, вести диалог и предпочитать хорошие ответы плохим.</p>
+<p>Для этого появились instruction tuning и методы обучения по человеческой обратной связи. В 2022 году <a class="wiki" href="https://ru.wikipedia.org/wiki/ChatGPT" target="_blank" rel="noopener noreferrer" title="Статья в русской Википедии">ChatGPT</a> сделал такой интерфейс массовым: Transformer из исследовательского объекта превратился в повседневного собеседника.</p>
+<aside class="callout vibe"><div class="callout-label">Вайб эпохи</div><p>За каких-то десять лет мы прошли от «нейросеть неплохо отличает кота от собаки» до «написать мне функцию, объяснить баг и сравнить две архитектуры». Снаружи это выглядит как внезапный взрыв. Изнутри — как десятки старых идей, которым наконец хватило масштаба.</p></aside>
+</section>
+<section class="chapter" id="part-14">
+<div class="chapter-kicker">Глава 14</div>
+<h2>13. Где в модели «знания» и что такое манифолд</h2>
+<p class="lead">Очень соблазнительно представить LLM как базу данных: внутри где-то лежит запись “столица Франции = Париж”. Реальность намного страннее.</p>
+<p>Долговременная информация модели распределена по весам: матрицам attention, FFN, embeddings и другим параметрам. Отдельный факт обычно нельзя указать пальцем как одну ячейку памяти. Он проявляется как результат совместной работы множества параметров.</p>
+<p>При этом в каждый момент каждый токен представлен вектором — например, из 4096 чисел. Геометрически это точка в 4096-мерном пространстве. После каждого слоя точка меняется.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>«банк» на входе
+      ↓ слой 1
+лексические признаки
+      ↓ слой 10
+контекст: организация? берег реки?
+      ↓ слой 25
+связи с переводом денег, счётом, валютой
+      ↓
+контекстное представление</pre></div>
+<p>Не все возможные 4096-мерные векторы имеют смысл. Реальные языковые состояния занимают очень структурированную часть огромного пространства. Именно здесь появляется удобная, хотя и не всегда строго математическая, метафора манифолда: осмысленные состояния лежат на сложной низкоразмерной структуре внутри пространства большей размерности.</p>
+<p>В таком языке можно сказать, что слои постепенно деформируют пространство представлений. Attention перемещает в состояние токена информацию от других токенов. FFN нелинейно преобразует набор признаков: усиливает полезные комбинации, подавляет другие и подготавливает новое представление для следующего слоя.</p>
+<aside class="callout"><div class="callout-label">Осторожно с метафорой</div><p>“Манифолд” полезен как геометрическая интуиция, но не стоит представлять его как буквально одну гладкую поверхность, где аккуратно разложены все знания. Реальные представления могут быть очень сложными, пересекающимися и распределёнными.</p></aside>
+<h3 id="topic-13">Можно ли сказать, что FFN переводит манифолд на следующий уровень абстракции?</h3>
+<p>Да — как интуитивную фразу. Но точнее: FFN нелинейно преобразует пространство признаков каждого токена. Иногда это действительно делает представление более абстрактным, иногда уточняет конкретную деталь или подготавливает информацию для следующего attention. Рост абстракции — эффект всей глубокой цепочки слоёв, а не обязанность одного FFN.</p>
+<div class="diagram" role="figure" aria-label="Схема"><pre>Attention:  «что мне взять у других токенов?»
+FFN:        «что сделать с полученной комбинацией признаков?»
+много слоёв: всё более полезные и абстрактные представления</pre></div>
+</section>
+<section class="chapter" id="part-15">
+<div class="chapter-kicker">Глава 15</div>
+<h2>14. Почему Transformer оказался настолько удачным</h2>
+<p class="lead">Сила Transformer не в одной сверхъестественной формуле. Он просто очень удачно соединяет несколько свойств, каждое из которых решает старую боль.</p>
+<ul class="story-list">
+<li>Attention даёт динамические связи между далёкими токенами.</li>
+<li>Self-attention позволяет каждому токену строить контекстное представление на основе всей доступной последовательности.</li>
+<li>Multi-head даёт несколько независимых способов искать отношения.</li>
+<li>FFN/MLP обеспечивает мощное нелинейное преобразование признаков внутри каждого токена.</li>
+<li>Residual connections позволяют делать сеть глубокой и не терять исходную информацию.</li>
+<li>Нормализация стабилизирует вычисления.</li>
+<li>Архитектура хорошо параллелится на GPU/TPU при обучении.</li>
+<li>Задача next-token prediction даёт практически бесконечный источник обучающих примеров без ручной разметки.</li>
+<li>Масштабирование параметров, данных и вычислений неожиданно долго продолжало улучшать способности.</li>
+</ul>
+<p>Поэтому Transformer можно рассматривать не как замену “обычной нейросети”, а как очень удачную композицию. Внутри всё ещё матричные умножения, MLP, нелинейности и градиентный спуск. Революция — в организации этих деталей и в масштабе.</p>
+</section>
+<section class="chapter" id="part-16">
+<div class="chapter-kicker">Глава 16</div>
+<h2>15. А Transformer — финальная архитектура?</h2>
+<p class="lead">Наверняка нет. Уже сейчас исследователи пытаются заменить часть attention более дешёвой памятью и рекуррентными механизмами. Но сам урок Transformer, вероятно, останется.</p>
+<p>Полный attention удобен тем, что может напрямую обратиться к конкретному прошлому токену, но его стоимость и KV-cache растут вместе с контекстом. Поэтому появились State Space Models, Mamba, RWKV, линейный attention и гибридные схемы.</p>
+<p>Любопытно, что история будто делает круг. После десятилетия торжества Transformer снова возвращаются идеи рекуррентного состояния и гейтов — только теперь на другом уровне математики и инженерии. Возможно, будущая архитектура будет не «после Transformer», а смесью лучшего из Transformer, RNN и внешней памяти.</p>
+<aside class="callout"><div class="callout-label">Историческая ирония</div><p>LSTM когда-то проиграла Transformer из-за последовательности и сложности масштабирования. Теперь исследователи пытаются вернуть рекуррентную память, но уже так, чтобы сохранить преимущества параллельного обучения и огромного масштаба.</p></aside>
+</section>
+<section class="chapter" id="part-17">
+<div class="chapter-kicker">Глава 17</div>
+<h2>16. Вся история в одной картинке</h2>
+<div class="diagram" role="figure" aria-label="Схема"><pre>1943  искусственный нейрон
+  ↓
+1950-е перцептрон: обучаем веса
+  ↓
+1980-е MLP + backprop: учим скрытые слои
+  ↓
+1990-е RNN: переносим состояние по последовательности
+  ↓
+1997  LSTM: гейты управляют памятью
+  ↓
+2003  neural language model: embeddings + FFN → следующее слово
+  ↓
+2014  seq2seq: encoder → decoder
+  ↓
+2014  attention: динамически выбираем, куда смотреть
+  ↓
+2017  Transformer: self-attention вместо рекуррентности
+  ↓
+2018+ massive pretraining: Transformer становится LLM
+  ↓
+2020-е instruction tuning + RLHF + tools + multimodality
+  ↓
+современный ИИ-ассистент</pre></div>
+<p>Если запомнить только одну мысль, пусть будет эта: современные LLM не появились благодаря одной гениальной идее. Они стали возможны потому, что десятки идей — перцептрон, backprop, embeddings, рекуррентная память, гейты, attention, residual-связи, нормализация, GPU и масштабирование — наконец сложились в одну инженерную систему.</p>
+</section>
+<section class="chapter" id="part-18">
+<div class="chapter-kicker">Глава 18</div>
+<h2>17. Мини-словарь после путешествия</h2>
+<div class="table-wrap"><table class="glossary">
+<tr>
+<th>Термин</th>
+<th>Простыми словами</th>
+</tr>
+<tr>
+<td>Нейрон</td>
+<td>Взвешивает входные числа, складывает их и применяет нелинейность.</td>
+</tr>
+<tr>
+<td>MLP</td>
+<td>Многослойная полносвязная сеть. Классическая форма “вход → скрытые слои → выход”.</td>
+</tr>
+<tr>
+<td>FFN</td>
+<td>Feed-Forward Network внутри Transformer. По сути небольшой MLP, отдельно применяемый к каждому токену.</td>
+</tr>
+<tr>
+<td>Embedding</td>
+<td>Обучаемый вектор, представляющий токен или другой объект.</td>
+</tr>
+<tr>
+<td>RNN</td>
+<td>Сеть, которая передаёт внутреннее состояние от шага к шагу последовательности.</td>
+</tr>
+<tr>
+<td>LSTM</td>
+<td>RNN с управляемой памятью и гейтами.</td>
+</tr>
+<tr>
+<td>Attention</td>
+<td>Механизм динамического взвешивания информации от других позиций.</td>
+</tr>
+<tr>
+<td>Q / K / V</td>
+<td>Query — что ищем; Key — по чему сопоставляем; Value — какую информацию получаем.</td>
+</tr>
+<tr>
+<td>Self-attention</td>
+<td>Attention, где Q, K и V построены из одной последовательности.</td>
+</tr>
+<tr>
+<td>Multi-head</td>
+<td>Несколько attention-механизмов параллельно с разными обучаемыми проекциями.</td>
+</tr>
+<tr>
+<td>Residual</td>
+<td>Сложение входа блока с его выходом: “старое состояние + поправка”.</td>
+</tr>
+<tr>
+<td>LayerNorm / RMSNorm</td>
+<td>Нормализация масштаба внутренних представлений.</td>
+</tr>
+<tr>
+<td>KV-cache</td>
+<td>Сохранённые K и V прошлых токенов для быстрой пошаговой генерации.</td>
+</tr>
+<tr>
+<td>LLM</td>
+<td>Большая языковая модель: обычно Transformer-подобная сеть, предобученная на огромном объёме текста и затем адаптированная для инструкций/диалога.</td>
+</tr>
+<tr>
+<td>Манифолд представлений</td>
+<td>Удобная геометрическая метафора структурированной области многомерного пространства, где находятся осмысленные состояния модели.</td>
+</tr>
+</table></div>
+</section>
+<section class="chapter" id="part-19">
+<div class="chapter-kicker">Глава 19</div>
+<h2>18. Ключевые работы, если захочется копнуть глубже</h2>
+<p>Это не обязательное чтение для понимания заметки, а исторические ориентиры — те самые работы, вокруг которых строится большая часть рассказа:</p>
+<ul class="story-list">
+<li>McCulloch &amp; Pitts (1943), “A Logical Calculus of the Ideas Immanent in Nervous Activity”.</li>
+<li>Rosenblatt (1958), “The Perceptron: A Probabilistic Model for Information Storage and Organization in the Brain”.</li>
+<li>Rumelhart, Hinton &amp; Williams (1986), “Learning representations by back-propagating errors”.</li>
+<li>Hochreiter &amp; Schmidhuber (1997), “Long Short-Term Memory”.</li>
+<li>Bengio et al. (2003), “A Neural Probabilistic Language Model”.</li>
+<li>Sutskever, Vinyals &amp; Le (2014), “Sequence to Sequence Learning with Neural Networks”.</li>
+<li>Bahdanau, Cho &amp; Bengio (2014), “Neural Machine Translation by Jointly Learning to Align and Translate”.</li>
+<li>Vaswani et al. (2017), “Attention Is All You Need”.</li>
+<li>Radford et al. (2018), “Improving Language Understanding by Generative Pre-Training”.</li>
+<li>Devlin et al. (2018), “BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding”.</li>
+<li>Brown et al. (2020), “Language Models are Few-Shot Learners”.</li>
+<li>Ouyang et al. (2022), “Training language models to follow instructions with human feedback”.</li>
+</ul>
+</section>
+<section class="chapter" id="part-20">
+<div class="chapter-kicker">Глава 20</div>
+<h2>Финал: что в этой истории особенно красиво</h2>
+<p class="lead">В 1950-е исследователи радовались машине, которая умеет обучить несколько весов. Сегодня у нас модели с миллиардами параметров, которые разговаривают на естественном языке. Но математическая ДНК всё ещё узнаваема.</p>
+<p>Нейрон всё так же получает числа, умножает их на веса и передаёт результат дальше. MLP всё так же строит сложные нелинейные преобразования. Backprop всё так же говорит каждому весу, в какую сторону его чуть сдвинуть. Просто теперь между этими старинными механизмами есть attention, огромные пространства представлений, невероятный масштаб вычислений и достаточно данных, чтобы из простой цели “предскажи следующее” выросло поведение, которое когда-то считалось научной фантастикой.</p>
+<p>Наверное, лучший способ смотреть на LLM — не как на внезапное чудо 2020-х, а как на очень длинную эстафету. Каждое поколение исследователей передавало следующему одну работающую идею. Иногда идея ждала двадцать лет, пока появятся нужные компьютеры. Иногда считалась тупиком, а потом возвращалась в новой форме. И именно поэтому история нейросетей так хорошо объясняет саму науку: прогресс редко идёт по прямой.</p>
+</section>
+<section class="wiki-guide" id="wiki-guide"><div class="chapter-kicker">Читать дальше</div><h2>Исторические вехи в русской Википедии</h2><p>Это не обязательное домашнее задание, а двери для любопытных: кликай по человеку или технологии, когда захочется свернуть с основного маршрута.</p><div class="wiki-grid"><a href="https://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D1%84%D0%BB%D0%B5%D0%BA%D1%82%D0%BE%D1%80%D0%BD%D0%B0%D1%8F_%D0%B4%D1%83%D0%B3%D0%B0" target="_blank" rel="noopener noreferrer">Как нервная система успевает отдёрнуть руку<span>↗</span></a><a href="https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D0%BA-%D0%9A%D0%B0%D0%BB%D0%BB%D0%BE%D0%BA,_%D0%A3%D0%BE%D1%80%D1%80%D0%B5%D0%BD" target="_blank" rel="noopener noreferrer">Уоррен Мак-Каллок<span>↗</span></a><a href="https://ru.wikipedia.org/wiki/%D0%9F%D0%B8%D1%82%D1%82%D1%81,_%D0%A3%D0%BE%D0%BB%D1%82%D0%B5%D1%80" target="_blank" rel="noopener noreferrer">Уолтер Питтс<span>↗</span></a><a href="https://ru.wikipedia.org/wiki/%D0%9F%D0%B5%D1%80%D1%86%D0%B5%D0%BF%D1%82%D1%80%D0%BE%D0%BD" target="_blank" rel="noopener noreferrer">Розенблатт и перцептрон<span>↗</span></a><a href="https://ru.wikipedia.org/wiki/%D0%97%D0%B0%D0%BF%D1%80%D0%B5%D1%82%D0%BD%D0%B0%D1%8F_%D0%BF%D0%BB%D0%B0%D0%BD%D0%B5%D1%82%D0%B0" target="_blank" rel="noopener noreferrer">Робот Робби и «Запретная планета» (1956)<span>↗</span></a><a href="https://ru.wikipedia.org/wiki/%D0%9C%D0%BD%D0%BE%D0%B3%D0%BE%D1%81%D0%BB%D0%BE%D0%B9%D0%BD%D1%8B%D0%B9_%D0%BF%D0%B5%D1%80%D1%86%D0%B5%D0%BF%D1%82%D1%80%D0%BE%D0%BD" target="_blank" rel="noopener noreferrer">Многослойные перцептроны<span>↗</span></a><a href="https://ru.wikipedia.org/wiki/%D0%9C%D0%B5%D1%82%D0%BE%D0%B4_%D0%BE%D0%B1%D1%80%D0%B0%D1%82%D0%BD%D0%BE%D0%B3%D0%BE_%D1%80%D0%B0%D1%81%D0%BF%D1%80%D0%BE%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B5%D0%BD%D0%B8%D1%8F_%D0%BE%D1%88%D0%B8%D0%B1%D0%BA%D0%B8" target="_blank" rel="noopener noreferrer">Обратное распространение ошибки<span>↗</span></a><a href="https://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D0%BA%D1%83%D1%80%D1%80%D0%B5%D0%BD%D1%82%D0%BD%D0%B0%D1%8F_%D0%BD%D0%B5%D0%B9%D1%80%D0%BE%D0%BD%D0%BD%D0%B0%D1%8F_%D1%81%D0%B5%D1%82%D1%8C" target="_blank" rel="noopener noreferrer">Рекуррентные нейронные сети<span>↗</span></a><a href="https://ru.wikipedia.org/wiki/%D0%94%D0%BE%D0%BB%D0%B3%D0%B0%D1%8F_%D0%BA%D1%80%D0%B0%D1%82%D0%BA%D0%BE%D1%81%D1%80%D0%BE%D1%87%D0%BD%D0%B0%D1%8F_%D0%BF%D0%B0%D0%BC%D1%8F%D1%82%D1%8C" target="_blank" rel="noopener noreferrer">Память LSTM<span>↗</span></a><a href="https://ru.wikipedia.org/wiki/%D0%92%D0%BD%D0%B8%D0%BC%D0%B0%D0%BD%D0%B8%D0%B5_%E2%80%94_%D1%8D%D1%82%D0%BE_%D0%B2%D1%81%D1%91,_%D1%87%D1%82%D0%BE_%D0%B2%D0%B0%D0%BC_%D0%BD%D1%83%D0%B6%D0%BD%D0%BE" target="_blank" rel="noopener noreferrer">Статья «Attention Is All You Need»<span>↗</span></a><a href="https://ru.wikipedia.org/wiki/%D0%A2%D1%80%D0%B0%D0%BD%D1%81%D1%84%D0%BE%D1%80%D0%BC%D0%B5%D1%80_(%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%8C_%D0%BC%D0%B0%D1%88%D0%B8%D0%BD%D0%BD%D0%BE%D0%B3%D0%BE_%D0%BE%D0%B1%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D1%8F)" target="_blank" rel="noopener noreferrer">Архитектура Transformer<span>↗</span></a></div></section>
+</main></div><footer class="site-footer">Как мы дошли до LLM · История нейросетей, рассказанная человеческим языком<br>Ссылки ведут на статьи русской Википедии; материал можно читать как самостоятельную страницу.</footer>
+<script>
+(()=>{
+  const progress=document.getElementById('progress');
+  const update=()=>{const max=document.documentElement.scrollHeight-innerHeight;progress.style.width=(max>0?Math.max(0,Math.min(100,scrollY/max*100)):0)+'%';};
+  addEventListener('scroll',update,{passive:true});addEventListener('resize',update);update();
+  const targets=[...document.querySelectorAll('.chapter')];
+  const links=[...document.querySelectorAll('.sidebar a')];
+  if('IntersectionObserver'in window){const ob=new IntersectionObserver(entries=>{for(const ent of entries){if(ent.isIntersecting){links.forEach(a=>a.classList.toggle('active',a.hash==='#'+ent.target.id));}}},{rootMargin:'-14% 0px -75% 0px'});targets.forEach(t=>ob.observe(t));}
+})();
+</script></body></html>
